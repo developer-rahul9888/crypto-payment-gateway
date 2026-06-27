@@ -1,0 +1,30 @@
+{
+  "name": "crypto-payment-gateway",
+  "version": "1.0.0",
+  "description": "A simple crypto payment gateway using Express.js and MySQL",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [
+    "express",
+    "mysql",
+    "crypto",
+    "payment",
+    "gateway"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.1.4",
+    "express": "^4.18.3",
+    "mysql2": "^3.6.0",
+    "sequelize": "^6.34.0",
+    "tronweb": "^4.0.7",
+    "web3": "^4.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
+  }
+}
