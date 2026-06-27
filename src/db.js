@@ -1,9 +1,9 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'crypto_gateway',
-  process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || '',
+  process.env.DB_NAME || 'u303362642_crypto_gateway',
+  process.env.DB_USER || 'u303362642_crypto_gateway',
+  process.env.DB_PASSWORD || '7vzhFkAlX$',
   {
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
