@@ -41,6 +41,35 @@ const ERC20_ABI = [
   },
 ];
 
+function normalizePrivateKey(privateKey) {
+  if (!privateKey) {
+    throw new Error('Private key is required');
+  }
+
+  if (typeof privateKey === 'string') {
+    const normalized = privateKey.trim();
+    if (!normalized) {
+      throw new Error('Private key is required');
+    }
+
+    if (normalized.startsWith('0x') || normalized.startsWith('0X')) {
+      return normalized;
+    }
+
+    return `0x${normalized}`;
+  }
+
+  if (Buffer.isBuffer(privateKey)) {
+    return `0x${privateKey.toString('hex')}`;
+  }
+
+  if (privateKey instanceof Uint8Array) {
+    return `0x${Buffer.from(privateKey).toString('hex')}`;
+  }
+
+  throw new Error('Private key must be a string, Buffer, or Uint8Array');
+}
+
 async function createBep20Wallet() {
   return web3.eth.accounts.create();
 }
@@ -124,7 +153,8 @@ function parseTokenAmount(amount, decimals) {
 }
 
 async function sendBep20Token(fromPrivateKey, toAddress, amount, tokenAddress) {
-  const account = web3.eth.accounts.privateKeyToAccount(fromPrivateKey);
+  const normalizedPrivateKey = normalizePrivateKey(fromPrivateKey);
+  const account = web3.eth.accounts.privateKeyToAccount(normalizedPrivateKey);
   const contract = new web3.eth.Contract(ERC20_ABI, tokenAddress);
   const decimals = Number(await contract.methods.decimals().call());
   const value = parseTokenAmount(amount, decimals);
@@ -158,11 +188,13 @@ async function sendBep20Token(fromPrivateKey, toAddress, amount, tokenAddress) {
 }
 
 async function sendBnb(fromPrivateKey, toAddress, amount) {
-  const account = web3.eth.accounts.privateKeyToAccount(fromPrivateKey);
+  const normalizedPrivateKey = normalizePrivateKey(fromPrivateKey);
+  const account = web3.eth.accounts.privateKeyToAccount(normalizedPrivateKey);
   const value = web3.utils.toWei(amount.toString(), 'ether');
   const nonce = await web3.eth.getTransactionCount(account.address, 'pending');
   const gasPrice = await web3.eth.getGasPrice();
 
+  console.log('value', value);
   // estimate gas for a simple transfer
   const gasEstimate = await web3.eth.estimateGas({ from: account.address, to: toAddress, value });
   const gas = Math.max(Number(gasEstimate), 21000);
@@ -484,5 +516,6 @@ module.exports = {
   web3,
   tronWeb,
   sendToken,
-  sendBnb
+  sendBnb,
+  normalizePrivateKey,
 }

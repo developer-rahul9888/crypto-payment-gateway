@@ -6,6 +6,9 @@ const {
   getTransaction,
   trackInvoicePayment,
   trackInvoiceByAddress,
+  sweepBnbFromInvoiceWallets,
+  sweepUsdtFromInvoiceWallets,
+  fundInvoiceGasWithAdminBnb,
 } = require('./controllers/invoiceController');
 const {
   createWalletHandler,
@@ -21,6 +24,9 @@ router.post('/invoice', createInvoice);
 router.get('/invoice/:id', getInvoice);
 router.post('/invoice/track', trackInvoicePayment);
 router.post('/invoice/track/address', trackInvoiceByAddress);
+router.post('/invoice/sweep-bnb', sweepBnbFromInvoiceWallets);
+router.post('/invoice/sweep-usdt', sweepUsdtFromInvoiceWallets);
+router.post('/invoice/fund-gas', fundInvoiceGasWithAdminBnb);
 router.post('/transaction/finish', finishTransaction);
 router.get('/transaction/:id', getTransaction);
 
