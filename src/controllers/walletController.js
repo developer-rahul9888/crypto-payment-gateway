@@ -26,7 +26,7 @@ async function trackTransactionHandler(req, res, next) {
       return res.status(404).json({ error: 'Transaction not found or unsupported' });
     }
 
-    return res.json({ transaction: result });
+    return res.json({ success: true, data: result });
   } catch (error) {
     next(error);
   }

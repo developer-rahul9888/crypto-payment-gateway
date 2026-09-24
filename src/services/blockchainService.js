@@ -95,6 +95,16 @@ async function createTrc20Wallet() {
   };
 }
 
+function serializeBigInt(data) {
+    return JSON.parse(
+        JSON.stringify(data, (key, value) =>
+            typeof value === "bigint"
+                ? value.toString()
+                : value
+        )
+    );
+}
+
 async function trackBep20Transaction(txHash) {
   try {
     const tx = await web3.eth.getTransaction(txHash);
@@ -104,10 +114,10 @@ async function trackBep20Transaction(txHash) {
     }
 
     return {
+      confirmed: Boolean(receipt?.blockNumber),
       network: "bep20",
-      tx,
-      receipt,
-      confirmed: Boolean(receipt && receipt.blockNumber),
+      tx: serializeBigInt(tx),
+      receipt: serializeBigInt(receipt),
     };
   } catch (error) {
     return null;
