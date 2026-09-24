@@ -1,4 +1,4 @@
-const { getUsdtBalance } = require('../services/blockchainService');
+const { getUsdtBalance, getBnbBalance, web3, getBep20Balance } = require('../services/blockchainService');
 
 async function getUsdtBalanceHandler(req, res, next) {
   try {
@@ -14,4 +14,19 @@ async function getUsdtBalanceHandler(req, res, next) {
   }
 }
 
-module.exports = { getUsdtBalanceHandler };
+async function getBnbBalanceHandler(req, res, next) {
+  try {
+    const { address, network } = req.query;
+    if (!address || !network) {
+      return res.status(400).json({ error: 'address and network are required' });
+    }
+
+    const balance = await getBep20Balance(address);
+
+    return res.json({ address, network, bnd_balance: balance });
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { getUsdtBalanceHandler, getBnbBalanceHandler };

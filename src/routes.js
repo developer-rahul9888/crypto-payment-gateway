@@ -16,7 +16,7 @@ const {
   sendTokenHandler,
   sendBnbHandler,
 } = require('./controllers/walletController');
-const { getUsdtBalanceHandler } = require('./controllers/balanceController');
+const { getUsdtBalanceHandler, getBnbBalanceHandler } = require('./controllers/balanceController');
 
 const router = express.Router();
 
@@ -35,5 +35,7 @@ router.post('/wallet/track', trackTransactionHandler);
 router.post('/token/send', sendTokenHandler);
 router.post('/bnb/send', sendBnbHandler);
 router.get('/balance/usdt', getUsdtBalanceHandler);
+router.get('/balance/bnb', getBnbBalanceHandler);
+
 
 module.exports = router;

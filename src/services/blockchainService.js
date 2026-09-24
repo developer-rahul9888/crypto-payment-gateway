@@ -14,6 +14,11 @@ const USDT_BSC_CONTRACT =
 const USDT_TRON_CONTRACT =
   process.env.USDT_TRON_CONTRACT || "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
 
+const BNB_BSC_CONTRACT =
+  process.env.BNB_BSC_CONTRACT || "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
+const BNB_TRON_CONTRACT =
+  process.env.BNB_TRON_CONTRACT || "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t";
+
 const web3 = new Web3(bep20RpcUrl);
 const tronWeb = new TronWeb(
   tronConfig.fullNode,
@@ -132,7 +137,8 @@ async function trackTrc20Transaction(txHash) {
 
 async function getBep20Balance(address) {
   const balance = await web3.eth.getBalance(address);
-  return balance.toString();
+  const decimals = 18;
+  return Number(balance) / 10 ** decimals;
 }
 
 async function getTrc20Balance(address) {
@@ -562,6 +568,25 @@ async function getUsdtBalance(address, network) {
   throw new Error("Unsupported network for USDT balance; use bep20 or trc20");
 }
 
+async function getBnbBalance(address, network) {
+  const target = network && network.toLowerCase();
+  if (target === "bep20" || target === "bsc") {
+    const { balance, decimals } = await getBep20TokenBalance(
+      address,
+      BNB_BSC_CONTRACT,
+    );
+    return Number(balance) / 10 ** decimals;
+  }
+  if (target === "trc20" || target === "tron") {
+    const { balance, decimals } = await getTrc20TokenBalance(
+      address,
+      BNB_TRON_CONTRACT,
+    );
+    return Number(balance) / 10 ** decimals;
+  }
+  throw new Error("Unsupported network for BNB balance; use bep20 or trc20");
+}
+
 async function createWallet(network) {
   const target = network && network.toLowerCase();
   if (target === "bep20" || target === "bsc") {
@@ -718,10 +743,12 @@ module.exports = {
   trackTransaction,
   checkAddressBalance,
   getUsdtBalance,
+  getBnbBalance,
   getInvoicePayments,
   web3,
   tronWeb,
   sendToken,
   sendBnb,
   normalizePrivateKey,
+  getBep20Balance,
 };
