@@ -40,7 +40,11 @@ async function sendTokenHandler(req, res, next) {
     }
 
     const result = await sendToken(network, from_private_key, to_address, amount, token_contract);
-    return res.status(200).json({ result });
+
+    if (result.error) {
+      return res.status(400).json({ success: false, messsage: result.message, error: result.error });
+    }
+    return res.status(200).json({ success: true, messsage: result.message, data: result });
   } catch (error) {
     next(error);
   }
@@ -54,7 +58,10 @@ async function sendBnbHandler(req, res, next) {
     }
 
     const result = await sendBnb(from_private_key, to_address, amount);
-    return res.status(200).json({ result });
+    if (result.error) {
+      return res.status(400).json({ success: false, messsage: result.message, error: result.error });
+    }
+    return res.status(200).json({ success: true, messsage: result.message, data: result });
   } catch (error) {
     next(error);
   }
