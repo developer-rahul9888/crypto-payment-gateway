@@ -38,13 +38,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     tableName: 'admin_wallets',
     timestamps: false,
-    indexes: [
-        {
-            name: 'uq_admin_wallets_address',
-            unique: true,
-            fields: ['address'],
-        },
-    ],
   });
 
   return AdminWallet;
