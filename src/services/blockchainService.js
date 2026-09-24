@@ -299,7 +299,7 @@ async function sendBnb(fromPrivateKey, toAddress, amount) {
   const tx = {
     from: account.address,
     to: toAddress,
-    value: web3.utils.toHex(value),
+    value: value,
     // gas: web3.utils.toHex(gas),
     // gasPrice: web3.utils.toHex(gasPrice),
     // nonce: web3.utils.toHex(nonce),
@@ -307,8 +307,14 @@ async function sendBnb(fromPrivateKey, toAddress, amount) {
   };
 
   try {
-    const estimatedGas = await web3.eth.estimateGas({ from: account.address, to: toAddress, value });
-    tx.gas = web3.utils.toHex(Math.max(Number(estimatedGas), 2100));
+    const estimatedGas = await web3.eth.estimateGas({
+      from: account.address,
+      to: toAddress,
+      value,
+    });
+    // tx.gas = web3.utils.toHex(Math.max(Number(estimatedGas), 2100));
+
+    tx.gas = estimatedGas < 21000n ? 21000n : estimatedGas;
   } catch (error) {
     return {
       success: false,
@@ -353,6 +359,20 @@ async function sendBnb(fromPrivateKey, toAddress, amount) {
     };
   }
 
+  const balance = await web3.eth.getBalance(account.address);
+
+  const valueWei = BigInt(value);
+  const totalGasFee = tx.gas * BigInt(gasPrice);
+  const totalRequired = valueWei + totalGasFee;
+
+  if (BigInt(balance) < totalRequired) {
+    return {
+      success: false,
+      message: "Insufficient funds for gas * price + value",
+      error: error,
+    };
+  }
+
   try {
     const signed = await account.signTransaction(tx);
     const receipt = await web3.eth.sendSignedTransaction(signed.rawTransaction);
@@ -361,7 +381,7 @@ async function sendBnb(fromPrivateKey, toAddress, amount) {
       message: "Transaction sent successfully",
       network: "bnb",
       tx_hash: receipt.transactionHash,
-      receipt,
+      // receipt,
       amount: Number(amount),
       to: toAddress,
     };
