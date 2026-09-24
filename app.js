@@ -21,7 +21,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-sequelize.sync({ alter: true }).then(async () => {
+sequelize.sync().then(async () => {
 //   await startInvoiceWatcher();
   app.listen(port, () => {
     console.log(`Crypto payment gateway listening on http://localhost:${port}`);
