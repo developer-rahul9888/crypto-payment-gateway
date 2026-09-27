@@ -465,8 +465,8 @@ async function sweepUsdtFromInvoiceWallets(req, res, next) {
 
 async function sweepUsdtFromInvoice(req, res, next) {
   try {
-    const { invoice_id, to_address, amount, network } = req.body;
-    const targetAddress = to_address || process.env.USDT_SWEEP_TO_ADDRESS;
+    const { wallet_address, amount, network } = req.body;
+    const targetAddress = process.env.USDT_SWEEP_TO_ADDRESS;
 
     if (!targetAddress) {
       return res.status(400).json({
@@ -477,7 +477,7 @@ async function sweepUsdtFromInvoice(req, res, next) {
 
     const sweepAmount = amount || process.env.USDT_SWEEP_AMOUNT || "1";
     const normalizedNetwork = normalizeNetwork(network);
-    const invoice = await Invoice.findByPk(invoice_id, {
+    const invoice = await Invoice.findOne({ where: { payment_address: wallet_address } }, {
       attributes: [
         "id",
         "payment_address",
